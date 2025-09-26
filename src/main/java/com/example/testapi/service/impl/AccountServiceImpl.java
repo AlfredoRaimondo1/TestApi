@@ -1,0 +1,49 @@
+package com.example.testapi.service.impl;
+
+import com.example.testapi.client.IExtFabrickService;
+import com.example.testapi.model.dto.*;
+import com.example.testapi.model.entity.Transaction;
+import com.example.testapi.repository.TransactionRepository;
+import com.example.testapi.service.IAccountService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AccountServiceImpl implements IAccountService {
+    private final IExtFabrickService extFabrickService;
+    private final TransactionRepository transactionRepository;
+
+    @Override
+    public ResponseGetBalanceDto getBalance(long accountId) {
+        ExtFabrickApiResponse<ExtFabrickGetBalancePayload> extResponse = extFabrickService.extGetBalance(accountId);
+
+        return new ResponseGetBalanceDto(accountId,
+                extResponse.getPayload().getBalance()+extResponse.getPayload().getCurrency());
+    }
+
+    @Override
+    public ExtFabrickGetTransactionListPayload getTransactionList(Long accountId, LocalDate fromAccountingDate, LocalDate toAccountingDate) {
+
+        ExtFabrickApiResponse<ExtFabrickGetTransactionListPayload> extResponse = extFabrickService.extGetTransactionList(accountId, fromAccountingDate, toAccountingDate);
+
+        List<Transaction> transactionToSave = new ArrayList<>(List.of());
+        List<TransactionDto> tr = extResponse.getPayload().getList();
+        tr.forEach(t -> {
+            Transaction transaction = new Transaction(t);
+            transactionToSave.add(transaction);
+        });
+        transactionRepository.saveAll(transactionToSave);
+
+        return extResponse.getPayload();
+
+    }
+
+
+}
