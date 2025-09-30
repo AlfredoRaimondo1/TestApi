@@ -53,7 +53,7 @@ public class AccountServiceImpl implements IAccountService {
             transactionToSave.add(transaction);
         });
         transactionRepository.saveAll(transactionToSave);
-
+        log.info("Update data into database");
         return responseGetTransactionList;
 
     }
