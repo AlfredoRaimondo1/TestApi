@@ -6,6 +6,7 @@ import com.example.testapi.exception.MoneyTransferException;
 import com.example.testapi.model.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,6 +24,15 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
     private final RestClient restExtClient;
     private final RestClient restClient;
 
+    @Value("${external.client.getbalance}")
+    private String getBalanceUrl;
+
+    @Value("${external.client.gettransaction}")
+    private String getTransactionUrl;
+
+    @Value("${external.client.moneytransfers}")
+    private String getMoneyTransfersUrl;
+
     /**
      * richiama servizio esterno fabrick per recuperare il saldo di un account
      * @param accountId account identifier di cui si vuole recuperare il saldo
@@ -33,7 +43,7 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
         log.info("Call external api to get balance for accountId: {}", accountId);
 
         return restExtClient.get()
-                .uri("/api/gbs/banking/v4.0/accounts/{accountId}/balance", accountId)
+                .uri(getBalanceUrl, accountId)
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<ExtFabrickApiResponse<ExtFabrickGetBalancePayload>>() {})
                 .getBody();
@@ -51,7 +61,7 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
         log.info("Call external api to get transaction list for accountId: {}", accountId);
 
         return restExtClient.get()
-                .uri("api/gbs/banking/v4.0/accounts/{accountId}/transactions?fromAccountingDate={fromAccountingDate}&toAccountingDate={fromAccountingDate}", accountId, fromAccountingDate, toAccountingDate)
+                .uri(getTransactionUrl, accountId, fromAccountingDate, toAccountingDate)
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<ExtFabrickApiResponse<ExtFabrickGetTransactionListPayload>>() {})
                 .getBody();
@@ -77,7 +87,7 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
 
 
         ResponseEntity<ExtFabrickApiResponse<ExtFabrickMoneyTransferPayload>> responseEntity =  restExtClient.post()
-                .uri("api/gbs/banking/v4.0/accounts/{accountId}/payments/money-transfers", accountId)
+                .uri(getMoneyTransfersUrl, accountId)
                 .body(requestBody)
                 .exchange((clientRequest, clientResponse) -> {
 

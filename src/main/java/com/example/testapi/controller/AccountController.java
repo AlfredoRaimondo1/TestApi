@@ -1,6 +1,7 @@
 package com.example.testapi.controller;
 
 import com.example.testapi.model.dto.ExtFabrickGetTransactionListPayload;
+import com.example.testapi.model.dto.ResponseGetBalanceDto;
 import com.example.testapi.service.IAccountService;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -30,7 +31,7 @@ public class AccountController {
      * @return restituisce il saldo associato all'account identifier richiesto
      */
     @GetMapping("/{accountId}/get-balance")
-    public ResponseEntity<?> getBalance(@PathVariable @NotNull @Positive Long accountId) {
+    public ResponseEntity<ResponseGetBalanceDto> getBalance(@PathVariable @NotNull @Positive Long accountId) {
         log.info("Received request to get balance for accountId: {}", accountId);
 
         return ResponseEntity.ok(accountService.getBalance(accountId));
@@ -45,7 +46,7 @@ public class AccountController {
      * @return restituisce la lista di transazioni associate all'account identifier richiesto
      */
     @GetMapping("/{accountId}/get-transaction-list")
-    public ResponseEntity<?> getTransactionList(@PathVariable Long accountId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromAccountingDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toAccountingDate) {
+    public ResponseEntity<ExtFabrickGetTransactionListPayload> getTransactionList(@PathVariable Long accountId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromAccountingDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toAccountingDate) {
         log.info("Received request to transaction list for accountId: {}", accountId);
 
         ExtFabrickGetTransactionListPayload response = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);

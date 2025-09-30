@@ -1,6 +1,7 @@
 package com.example.testapi.service.impl;
 
 import com.example.testapi.client.IExtFabrickService;
+import com.example.testapi.exception.InternalException;
 import com.example.testapi.model.dto.*;
 import com.example.testapi.model.entity.Transaction;
 import com.example.testapi.repository.TransactionRepository;
@@ -24,6 +25,11 @@ public class AccountServiceImpl implements IAccountService {
     public ResponseGetBalanceDto getBalance(long accountId) {
         ExtFabrickApiResponse<ExtFabrickGetBalancePayload> extResponse = extFabrickService.extGetBalance(accountId);
 
+        if(extResponse.getPayload() == null){
+            log.error("Error API: received payload from getBalance is null");
+            throw new InternalException("Error API: received payload from getBalance is null");
+        }
+
         return new ResponseGetBalanceDto(accountId,
                 extResponse.getPayload().getBalance()+extResponse.getPayload().getCurrency());
     }
@@ -32,6 +38,11 @@ public class AccountServiceImpl implements IAccountService {
     public ExtFabrickGetTransactionListPayload getTransactionList(Long accountId, LocalDate fromAccountingDate, LocalDate toAccountingDate) {
 
         ExtFabrickApiResponse<ExtFabrickGetTransactionListPayload> extResponse = extFabrickService.extGetTransactionList(accountId, fromAccountingDate, toAccountingDate);
+
+        if(extResponse.getPayload() == null){
+            log.error("Error API: received payload from getTransactionList is null");
+            throw new InternalException("Error API: received payload from getTransactionList is null");
+        }
 
         List<Transaction> transactionToSave = new ArrayList<>(List.of());
         List<TransactionDto> tr = extResponse.getPayload().getList();

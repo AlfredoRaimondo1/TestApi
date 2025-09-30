@@ -17,12 +17,15 @@ public class ExtFabrickConfig {
     @Value("${external.auth.schema}")
     private String authSchema;
 
+    @Value("${external.client.baseurl}")
+    private String baseUrl;
+
 
 
     @Bean
     public RestClient fabrickRestClient(RestClient.Builder builder, PropertyResolver propertyResolver) {
         return builder
-                .baseUrl("https://sandbox.platfr.io")
+                .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader("Api-Key", apiKey)
                 .defaultHeader("Auth-Schema", authSchema)
