@@ -32,8 +32,8 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
-    public ResponseEntity<ExceptionMoneyTransferResponse> handleBadRequestException(HttpClientErrorException.BadRequest ex) {
-        ExceptionMoneyTransferResponse error = new ExceptionMoneyTransferResponse("API000", "Errore tecnico  La condizione BP049 non e' prevista per il conto id 14537780");
+    public ResponseEntity<ExceptionResponse> handleBadRequestException(HttpClientErrorException.BadRequest ex) {
+        ExceptionResponse error = new ExceptionResponse("Invalid request", HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
