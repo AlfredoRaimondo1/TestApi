@@ -4,6 +4,9 @@ import com.example.testapi.client.IExtFabrickService;
 import com.example.testapi.exception.InternalException;
 import com.example.testapi.exception.MoneyTransferException;
 import com.example.testapi.model.dto.*;
+import com.example.testapi.model.dto.InternalCodesError;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.io.File;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +39,9 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
 
     @Value("${external.client.moneytransfers}")
     private String getMoneyTransfersUrl;
+
+    @Value("${error.codes.file}")
+    private String errorCodesFile;
 
     /**
      * richiama servizio esterno fabrick per recuperare il saldo di un account
@@ -77,15 +87,6 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
     public ExtFabrickApiResponse<ExtFabrickMoneyTransferPayload> extMoneyTransfer(long accountId, RequestMoneyTransfersDto requestBody) {
         log.info("Call external api to money transfer for accountId: {}", accountId);
 
-//        return restExtClient.post()
-//                .uri("api/gbs/banking/v4.0/accounts/{accountId}/payments/money-transfers", accountId)
-//                .body(requestBody)
-//                .retrieve()
-//                .toEntity(new ParameterizedTypeReference<ExtFabrickApiResponse<ExtFabrickMoneyTransferPayload>>() {})
-//                .getBody();
-
-
-
         ResponseEntity<ExtFabrickApiResponse<ExtFabrickMoneyTransferPayload>> responseEntity =  restExtClient.post()
                 .uri(getMoneyTransfersUrl, accountId)
                 .body(requestBody)
@@ -101,6 +102,25 @@ public class ExtFabrickServiceImpl implements IExtFabrickService {
                                 log.error("Error body: {}", errorBody);
 
                                 assert errorBody != null;
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                List<InternalCodesError> internalErrorList = objectMapper.readValue(
+                                        new File(errorCodesFile),
+                                        new TypeReference<List<InternalCodesError>>() {}
+                                );
+
+                                Map<String, String> mappaErroriInterni = internalErrorList.stream()
+                                        .collect(Collectors.toMap(
+                                                InternalCodesError::getCode,
+                                                InternalCodesError::getDescription
+                                        ));
+
+                                for (ExtFabrickError error : errorBody.getErrors()) {
+                                    String descrizioneInterna = mappaErroriInterni.get(error.getCode());
+                                    if (descrizioneInterna != null) {
+                                        error.setDescription(descrizioneInterna);
+                                    }
+                                }
+
                                 throw new MoneyTransferException("Dati per il money transfer non validi", errorBody.getErrors());
                             }
 

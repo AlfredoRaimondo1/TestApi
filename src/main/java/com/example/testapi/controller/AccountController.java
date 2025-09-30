@@ -1,7 +1,7 @@
 package com.example.testapi.controller;
 
-import com.example.testapi.model.dto.ExtFabrickGetTransactionListPayload;
 import com.example.testapi.model.dto.ResponseGetBalanceDto;
+import com.example.testapi.model.dto.ResponseGetTransactionList;
 import com.example.testapi.service.IAccountService;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -46,10 +46,10 @@ public class AccountController {
      * @return restituisce la lista di transazioni associate all'account identifier richiesto
      */
     @GetMapping("/{accountId}/get-transaction-list")
-    public ResponseEntity<ExtFabrickGetTransactionListPayload> getTransactionList(@PathVariable Long accountId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromAccountingDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toAccountingDate) {
+    public ResponseEntity<ResponseGetTransactionList> getTransactionList(@PathVariable Long accountId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromAccountingDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toAccountingDate) {
         log.info("Received request to transaction list for accountId: {}", accountId);
 
-        ExtFabrickGetTransactionListPayload response = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
+        ResponseGetTransactionList response = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
 
         return ResponseEntity.ok(response);
 

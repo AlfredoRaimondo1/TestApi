@@ -23,6 +23,7 @@ public class OperationServiceImpl implements IOperationService {
 
         ExtFabrickApiResponse<ExtFabrickMoneyTransferPayload> extResponse = extFabrickService.extMoneyTransfer(accountId, requestBody);
 
+        ResponseMoneyTransferDto response = new ResponseMoneyTransferDto(extResponse.getPayload(), extResponse.getErrors());
 
         return new ResponseMoneyTransferDto(extResponse.getPayload(), extResponse.getErrors());
 

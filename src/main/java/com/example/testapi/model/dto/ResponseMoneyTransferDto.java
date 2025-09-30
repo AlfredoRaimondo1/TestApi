@@ -11,11 +11,16 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ResponseMoneyTransferDto {
-    private ExtFabrickMoneyTransferPayload payload;
+    private ResponseFabrickMoneyTransfer payload;
     private List<ExtFabrickError> error;
 
-    public ResponseMoneyTransferDto(ExtFabrickMoneyTransferPayload payload, List<ExtFabrickError> error) {
+    public ResponseMoneyTransferDto(ResponseFabrickMoneyTransfer payload, List<ExtFabrickError> error) {
         this.payload = payload;
+        this.error = error;
+    }
+
+    public ResponseMoneyTransferDto(ExtFabrickMoneyTransferPayload payload, List<ExtFabrickError> error) {
+        this.payload = new ResponseFabrickMoneyTransfer(payload);
         this.error = error;
     }
 }

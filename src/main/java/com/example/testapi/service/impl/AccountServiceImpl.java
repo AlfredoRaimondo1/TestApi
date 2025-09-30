@@ -35,7 +35,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public ExtFabrickGetTransactionListPayload getTransactionList(Long accountId, LocalDate fromAccountingDate, LocalDate toAccountingDate) {
+    public ResponseGetTransactionList getTransactionList(Long accountId, LocalDate fromAccountingDate, LocalDate toAccountingDate) {
 
         ExtFabrickApiResponse<ExtFabrickGetTransactionListPayload> extResponse = extFabrickService.extGetTransactionList(accountId, fromAccountingDate, toAccountingDate);
 
@@ -44,15 +44,17 @@ public class AccountServiceImpl implements IAccountService {
             throw new InternalException("Error API: received payload from getTransactionList is null");
         }
 
+        ResponseGetTransactionList responseGetTransactionList = new ResponseGetTransactionList(extResponse.getPayload());
+
         List<Transaction> transactionToSave = new ArrayList<>(List.of());
-        List<TransactionDto> tr = extResponse.getPayload().getList();
+        List<TransactionDto> tr = responseGetTransactionList.getList();
         tr.forEach(t -> {
             Transaction transaction = new Transaction(t);
             transactionToSave.add(transaction);
         });
         transactionRepository.saveAll(transactionToSave);
 
-        return extResponse.getPayload();
+        return responseGetTransactionList;
 
     }
 

@@ -2,9 +2,7 @@ package com.example.testapi.service.impl;
 
 import com.example.testapi.client.IExtFabrickService;
 import com.example.testapi.model.dto.*;
-import com.example.testapi.model.entity.Transaction;
 import com.example.testapi.repository.TransactionRepository;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,22 +10,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
@@ -93,10 +89,8 @@ class AccountServiceImplTest {
 
         //when
         when(extFabrickService.extGetBalance(accountId)).thenThrow(HttpClientErrorException.Forbidden.class);
-        //when(extFabrickService.extGetBalance(accountId)).thenReturn(extResponse.getBody());
 
         //then
-        //verify(extFabrickService).extGetBalance(accountId);
         assertThrows(HttpClientErrorException.Forbidden.class, () ->
                 accountService.getBalance(accountId));
 
@@ -135,7 +129,7 @@ class AccountServiceImplTest {
         //when
         when(extFabrickService.extGetTransactionList(accountId, fromAccountingDate, toAccountingDate)).thenReturn(extResponse.getBody());
 
-        ExtFabrickGetTransactionListPayload result = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
+        ResponseGetTransactionList result = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
 
         //then
         verify(extFabrickService).extGetTransactionList(accountId, fromAccountingDate, toAccountingDate);
@@ -165,7 +159,7 @@ class AccountServiceImplTest {
         //when
         when(extFabrickService.extGetTransactionList(accountId, fromAccountingDate, toAccountingDate)).thenReturn(extResponse.getBody());
 
-        ExtFabrickGetTransactionListPayload result = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
+        ResponseGetTransactionList result = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
 
         //then
         verify(extFabrickService).extGetTransactionList(accountId, fromAccountingDate, toAccountingDate);

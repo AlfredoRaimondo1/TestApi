@@ -2,8 +2,11 @@ package com.example.testapi.service.impl;
 
 import com.example.testapi.client.IExtFabrickService;
 import com.example.testapi.exception.MoneyTransferException;
-import com.example.testapi.model.dto.*;
+import com.example.testapi.model.dto.ExtFabrickApiResponse;
+import com.example.testapi.model.dto.ExtFabrickMoneyTransferPayload;
+import com.example.testapi.model.dto.RequestMoneyTransfersDto;
 import com.example.testapi.repository.TransactionRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,18 +17,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,7 +88,6 @@ class OperationServiceImplTest {
 
         //when
         when(extFabrickService.extMoneyTransfer(accountId, requestMoneyTransfersDto)).thenThrow(MoneyTransferException.class);
-        //ResponseMoneyTransferDto result = operationService.moneyTransfer(accountId, requestMoneyTransfersDto);
 
         //then
         MoneyTransferException ex = assertThrows(MoneyTransferException.class, () ->

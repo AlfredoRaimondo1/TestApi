@@ -1,6 +1,7 @@
 package com.example.testapi.controller;
 
 import com.example.testapi.model.dto.RequestMoneyTransfersDto;
+import com.example.testapi.model.dto.ResponseFabrickMoneyTransfer;
 import com.example.testapi.model.dto.ResponseMoneyTransferDto;
 import com.example.testapi.service.IOperationService;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class OperationController {
      * @return restituisce risposta sullo stato dell'esecuzione del bonifico
      */
     @PostMapping("/{accountId}/money-transfer")
-    public ResponseEntity<?> moneyTransfer(@PathVariable @NotNull @Positive Long accountId,
-                                            @RequestBody @Valid RequestMoneyTransfersDto requestBody) {
+    public ResponseEntity<ResponseFabrickMoneyTransfer> moneyTransfer(@PathVariable @NotNull @Positive Long accountId,
+                                                                      @RequestBody @Valid RequestMoneyTransfersDto requestBody) {
         log.info("Received request to execute money transfer for accountId: {}", accountId);
 
         ResponseMoneyTransferDto response = operationService.moneyTransfer(accountId, requestBody);
