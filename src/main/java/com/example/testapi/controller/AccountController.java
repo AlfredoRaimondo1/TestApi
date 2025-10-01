@@ -49,6 +49,10 @@ public class AccountController {
     public ResponseEntity<ResponseGetTransactionList> getTransactionList(@PathVariable Long accountId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromAccountingDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toAccountingDate) {
         log.info("Received request to transaction list for accountId: {}", accountId);
 
+        if (fromAccountingDate.isAfter(toAccountingDate)) {
+            throw new IllegalArgumentException("La data di inizio deve essere precedente o uguale alla data di fine.");
+        }
+
         ResponseGetTransactionList response = accountService.getTransactionList(accountId, fromAccountingDate, toAccountingDate);
 
         return ResponseEntity.ok(response);

@@ -30,7 +30,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
-
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
     public ResponseEntity<ExceptionResponse> handleBadRequestException(HttpClientErrorException.BadRequest ex) {
         ExceptionResponse error = new ExceptionResponse("Invalid request", HttpStatus.BAD_REQUEST.value());
@@ -65,4 +64,11 @@ public class GlobalExceptionHandler {
                 .map(item -> new ExceptionMoneyTransferResponse(item.getCode(), item.getDescription())).toList());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponse> handleForbiddenException(IllegalArgumentException ex) {
+        ExceptionResponse error = new ExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
 }
